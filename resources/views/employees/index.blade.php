@@ -35,7 +35,7 @@
                         <a href="{{ route('employees.show', $employee->id)}}">Detail</a> |
                         <a href="{{ route('employees.edit', $employee->id)}}">Edit</a> |
                         <form action="{{ route('employees.destroy', $employee->id)}}" method="POST" style="display:inline">
-                            @scrf
+                            @csrf
                             @method('DELETE')
                             <button type="submit" onclick="return confirm('Yakin ingin menghapus?')">Delete</button>
                         </form>

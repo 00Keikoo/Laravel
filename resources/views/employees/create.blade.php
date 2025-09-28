@@ -61,7 +61,7 @@
         <div>
             <label for="status">Status:</label>
             <select type="status" id="status" required name="status">
-                <option value="aktif selected">Akftif</option>
+                <option value="aktif">Aktif</option>
                 <option value="nonaktif">Nonaktif</option>
             </select>
             @error('status')
