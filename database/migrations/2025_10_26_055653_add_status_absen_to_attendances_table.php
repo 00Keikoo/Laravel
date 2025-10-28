@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('departments', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama_department', 100);
-            $table->text('deskripsi')->nullable();
-            $table->timestamps();
+        Schema::table('attendances', function (Blueprint $table) {
+            $table->enum('status_absen', ['masuk', 'keluar'])->default('masuk');
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('departments');
+        Schema::table('attendances', function (Blueprint $table) {
+            $table->dropColumn('status_absen');
+        });
     }
 };
