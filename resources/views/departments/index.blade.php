@@ -28,6 +28,10 @@
             @method('DELETE')
             <button type="submit" 
                     class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg">Hapus</button>
+            <a href="{{ route('departments.edit', $dept->id) }}"
+            class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded">
+            Edit
+            </a>
           </form>
         </td>
       </tr>

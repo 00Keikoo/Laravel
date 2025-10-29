@@ -32,11 +32,30 @@ class DepartmentController extends Controller
 
         Department::create($validated);
 
-        return redirect()->route('department.index')->with('success', 'Departemen berhasil ditambahkan');
+        return redirect()->route('departments.index')->with('success', 'Departemen berhasil ditambahkan');
     }
+
+    public function edit($id)
+    {
+        $department = Department::findOrFail($id);
+        return view('departments.edit', compact('department'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'nama_departemen' => 'required|string|max:255',
+        ]);
+
+        $department = Department::findOrFail($id);
+        $department->update($validated);
+
+        return redirect()->route('departments.index')->with('success', 'Departemen berhasil diperbarui.');
+    }
+
 
     public function destroy($id){
         Department::findOrFail($id)->delete();
-        return redirect()->route('department.index')->with('success', 'Departemen berhasil dihapus');
+        return redirect()->route('departments.index')->with('success', 'Departemen berhasil dihapus');
     }
 }
