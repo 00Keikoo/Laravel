@@ -28,19 +28,39 @@ class AttendanceController extends Controller
     {
         $validated = $request->validate([
             'employee_id' => 'required|exists:employees,id',
-            'tipe_absen' => 'required|in:masuk,keluar',
+            'tipe_absen' => 'required|in:masuk,keluar,izin,sakit',
         ]);
 
-        $today = Carbon::today();
-
+        $today = now()->toDateString();
         $attendance = Attendance::where('employee_id', $validated['employee_id'])
             ->whereDate('tanggal', $today)
             ->first();
 
+        // === Izin atau Sakit ===
+        if ($validated['tipe_absen'] === 'izin') {
+            Attendance::create([
+                'employee_id' => $validated['employee_id'],
+                'tanggal' => $today,
+                'status_absensi' => 'izin',
+            ]);
+
+            return back()->with('success', 'Izin berhasil dicatat.');
+        }
+
+        if ($validated['tipe_absen'] === 'sakit') {
+            Attendance::create([
+                'employee_id' => $validated['employee_id'],
+                'tanggal' => $today,
+                'status_absensi' => 'sakit',
+            ]);
+
+            return back()->with('success', 'Sakit berhasil dicatat.');
+        }
+
         // === Absen Masuk ===
         if ($validated['tipe_absen'] === 'masuk') {
             if ($attendance) {
-                return redirect()->back()->with('error', 'Pegawai ini sudah absen masuk hari ini!');
+                return back()->with('error', 'Pegawai ini sudah absen masuk hari ini!');
             }
 
             Attendance::create([
@@ -50,23 +70,25 @@ class AttendanceController extends Controller
                 'waktu_masuk' => now(),
             ]);
 
-            return redirect()->route('attendance.index')->with('success', 'Absen masuk berhasil dicatat.');
+            return back()->with('success', 'Absen masuk berhasil dicatat.');
         }
 
         // === Absen Keluar ===
-        if (!$attendance) {
-            return redirect()->back()->with('error', 'Pegawai ini belum absen masuk!');
+        if ($validated['tipe_absen'] === 'keluar') {
+            if (!$attendance) {
+                return back()->with('error', 'Pegawai ini belum absen masuk!');
+            }
+
+            if ($attendance->waktu_keluar) {
+                return back()->with('error', 'Pegawai ini sudah absen keluar!');
+            }
+
+            $attendance->update([
+                'waktu_keluar' => now(),
+            ]);
+
+            return back()->with('success', 'Absen keluar berhasil dicatat.');
         }
-
-        if ($attendance->waktu_keluar) {
-            return redirect()->back()->with('error', 'Pegawai ini sudah absen keluar hari ini!');
-        }
-
-        $attendance->update([
-            'waktu_keluar' => now(),
-        ]);
-
-        return redirect()->route('attendance.index')->with('success', 'Absen keluar berhasil dicatat.');
     }
 
     public function destroy($id)

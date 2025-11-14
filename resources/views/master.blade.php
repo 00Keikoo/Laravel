@@ -16,7 +16,7 @@
                 <a href="{{ url('/') }}" class="text-gray-600 hover:text-blue-600 transition">Employee</a>
                 <a href="{{ url('/departments') }}" class="text-gray-600 hover:text-blue-600 transition">Department</a>
                 <a href="{{ url('/attendance') }}" class="text-gray-600 hover:text-blue-600 transition">Attendance</a>
-                <!-- <a href="{{ url('/report') }}" class="text-gray-600 hover:text-blue-600 transition">Report</a> -->
+                <a href="{{ url('/report') }}" class="text-gray-600 hover:text-blue-600 transition">Report</a>
                 <a href="{{ url('/salaries') }}" class="text-gray-600 hover:text-blue-600 transition">Salary</a>
                 <a href="{{ url('/positions') }}" class="text-gray-600 hover:text-blue-600 transition">Position</a>
             </nav>

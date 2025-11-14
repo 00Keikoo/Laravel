@@ -34,19 +34,28 @@
         @php
           $todayAttendance = $employee->attendances->first();
         @endphp
+
         <tr class="hover:bg-gray-50 text-center">
           <td class="border py-2 px-4">{{ $index + 1 }}</td>
           <td class="border py-2 px-4">{{ $employee->nama_lengkap }}</td>
           <td class="border py-2 px-4">{{ $employee->position->nama_jabatan ?? '-' }}</td>
 
-          <!-- Status -->
+          <!-- STATUS -->
           <td class="border py-2 px-4 font-semibold">
             @if(!$todayAttendance)
               <span class="text-red-600">Belum Absen</span>
-            @elseif(!$todayAttendance->waktu_keluar)
+
+            @elseif($todayAttendance->status_absensi === 'izin')
+              <span class="text-blue-600">Izin</span>
+
+            @elseif($todayAttendance->status_absensi === 'sakit')
+              <span class="text-purple-600">Sakit</span>
+
+            @elseif($todayAttendance->status_absensi === 'hadir' && !$todayAttendance->waktu_keluar)
               <span class="text-yellow-600">⏰ Masih Bekerja</span>
-            @else
-              <span class="text-green-600">✅ Selesai</span>
+
+            @elseif($todayAttendance->status_absensi === 'hadir' && $todayAttendance->waktu_keluar)
+              <span class="text-green-600">Selesai</span>
             @endif
           </td>
 
@@ -60,10 +69,11 @@
             {{ $todayAttendance?->waktu_keluar ? \Carbon\Carbon::parse($todayAttendance->waktu_keluar)->format('H:i') : '-' }}
           </td>
 
-          <!-- Tombol Aksi -->
+          <!-- Aksi -->
           <td class="border py-2 px-4 space-x-2">
+
             @if(!$todayAttendance)
-              <!-- Tombol Absen Masuk -->
+              <!-- Absen Masuk -->
               <form action="{{ route('attendance.store') }}" method="POST" class="inline">
                 @csrf
                 <input type="hidden" name="employee_id" value="{{ $employee->id }}">
@@ -72,8 +82,29 @@
                   Absen Masuk
                 </button>
               </form>
-            @elseif(!$todayAttendance->waktu_keluar)
-              <!-- Tombol Absen Keluar -->
+
+              <!-- Izin -->
+              <form action="{{ route('attendance.store') }}" method="POST" class="inline">
+                @csrf
+                <input type="hidden" name="employee_id" value="{{ $employee->id }}">
+                <input type="hidden" name="tipe_absen" value="izin">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">
+                  Izin
+                </button>
+              </form>
+
+              <!-- Sakit -->
+              <form action="{{ route('attendance.store') }}" method="POST" class="inline">
+                @csrf
+                <input type="hidden" name="employee_id" value="{{ $employee->id }}">
+                <input type="hidden" name="tipe_absen" value="sakit">
+                <button type="submit" class="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded">
+                  Sakit
+                </button>
+              </form>
+
+            @elseif($todayAttendance->status_absensi === 'hadir' && !$todayAttendance->waktu_keluar)
+              <!-- Absen Keluar -->
               <form action="{{ route('attendance.store') }}" method="POST" class="inline">
                 @csrf
                 <input type="hidden" name="employee_id" value="{{ $employee->id }}">
@@ -82,10 +113,13 @@
                   Absen Keluar
                 </button>
               </form>
+
             @else
               <span class="text-gray-500 italic">Selesai</span>
             @endif
+
           </td>
+
         </tr>
       @endforeach
     </tbody>
